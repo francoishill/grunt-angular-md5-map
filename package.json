@@ -1,7 +1,7 @@
 {
   "name": "grunt-angular-md5-map",
   "description": "Generate an AngularJS provider to automatically append the MD5 hash of a file as a query at the end, ie. 'myfile.js?md5_hash_will_go_here'.",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "homepage": "https://github.com/francoishill/grunt-angular-md5-map",
   "author": {
     "name": "Francois Hill",

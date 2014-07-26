@@ -23,6 +23,8 @@ module.exports = function (grunt) {
 		// Merge task-specific and/or target-specific options with these defaults.
 		var options = this.options({});
 
+		if (!options.urlMode)
+			throw grunt.util.error('Please specify options.urlMode');
 		if (!options.moduleName)
 			throw grunt.util.error('Please specify options.moduleName');
 		if (!options.moduleVariableName)
@@ -33,6 +35,9 @@ module.exports = function (grunt) {
 			throw grunt.util.error('Please specify options.providerMethodNameToGetUrl');
 		if (!options.instanceOfProviderMethodNameToGetUrl)
 			throw grunt.util.error('Please specify options.instanceOfProviderMethodNameToGetUrl');
+
+		if (options.urlMode !== 'md5Suffix' && options.urlMode !== 'noSuffix')
+			throw grunt.util.error('Please use only "md5Suffix" or "noSuffix", unsupported value: ' + options.urlMode);
 
 		this.files.forEach(function (f) {
 			var allFilePaths = [];
@@ -76,6 +81,8 @@ module.exports = function (grunt) {
 			if (baseDirWithSlashes.length === 0 || baseDirWithSlashes[0] !== '/')
 				baseDirWithSlashes = '/' + baseDirWithSlashes;
 
+			var suffixValue = options.urlMode === 'md5Suffix' ? '"?" + md5Val' : '""';
+
 			var md5ProviderFileContent = 'var ' + options.moduleVariableName +
 			'= angular.module("' + options.moduleName + '", []);\
 			'+ options.moduleVariableName + '.provider("' + options.providerName + '", function() {\
@@ -87,7 +94,7 @@ module.exports = function (grunt) {
 					while (tmpRelUrl[0] === "/")\
 						tmpRelUrl = tmpRelUrl.substr(1);\
 					var md5Val = allMd5Mappings[tmpRelUrl] || allMd5Mappings["/" + tmpRelUrl];\
-					return "' + baseDirWithSlashes + '" + tmpRelUrl + "?" + md5Val;\
+					return "' + baseDirWithSlashes + '" + tmpRelUrl + ' + suffixValue + ';\
 				};\
 				this.' + options.providerMethodNameToGetUrl + ' = getUrlWithMd5;\
 	\
